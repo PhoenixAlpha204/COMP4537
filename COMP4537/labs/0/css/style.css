@@ -1,0 +1,15 @@
+button {
+  height: 5em;
+  width: 10em;
+  border: 0.2em solid gray;
+  margin: 0.2em;
+  color: black;
+}
+
+button.absolute {
+  position: absolute;
+}
+
+input:invalid {
+  border: 0.1em solid red;
+}

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>COMP 4537 Lab 0</title>
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
+
+  <body>
+    <form id="form">
+      <label id="instructionLabel">
+        <br /><br />
+        <!-- https://technology.blog.gov.uk/2020/02/24/why-the-gov-uk-design-system-team-changed-the-input-type-for-numbers/ -->
+        <input
+          id="input"
+          type="text"
+          autofocus
+          inputmode="numeric"
+          pattern="[3-7]{1}"
+          required
+        />
+      </label>
+      <input type="button" value="Go!" id="startGame" disabled />
+    </form>
+    <br /><br />
+    <script src="./js/script.js"></script>
+  </body>
+</html>
