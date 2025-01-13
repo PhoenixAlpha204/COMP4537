@@ -5,7 +5,7 @@
  * button click behaviour.
  */
 document.addEventListener("DOMContentLoaded", () => {
-  fetch("../lang/messages/en/user.js")
+  fetch("/COMP4537/labs/0/lang/messages/en/user.js")
     .then((response) => response.json())
     .then((data) => {
       const gameManager = new GameManager(data);
