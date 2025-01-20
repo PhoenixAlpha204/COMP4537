@@ -5,7 +5,7 @@
  * depending on the page title.
  */
 document.addEventListener("DOMContentLoaded", () => {
-  fetch("../lang/messages/en/user.json")
+  fetch("/COMP4537/labs/1/lang/messages/en/user.js")
     .then((response) => response.json())
     .then((data) => {
       const noteManager = new NoteManager(
