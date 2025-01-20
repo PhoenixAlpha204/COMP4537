@@ -1,0 +1,58 @@
+body {
+    font-family: sans-serif;
+    max-width: 40em;
+    margin: auto;
+}
+
+#box {
+    border: 0.1em solid navy;
+    padding: 0.1em 3em 3em 3em;
+}
+
+#buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-spacer {
+    width: 1em;
+}
+
+#add, .remove {
+    border-radius: 0.2em;
+    color: white;
+}
+
+#add {
+    background-color: forestgreen;
+    border: 0.1em solid darkgreen;
+    padding: 0 1.5em;
+}
+
+.remove {
+    background-color: darkorange;
+    border: 0.1em solid chocolate;
+    padding: 0 0.7em;
+}
+
+textarea {
+    background-color: steelblue;
+    border: 0.1em solid darkblue;
+    color: white;
+    padding: 0.4em;
+    width: 12em;
+    font-family: sans-serif;
+}
+
+#timestamp {
+    text-align: right;
+    padding: 0 5em 5em 0;
+    font-size: 0.8em;
+}
+
+.note {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.7em;
+}
