@@ -2,6 +2,7 @@ const utils = require("./modules/utils");
 const http = require("http");
 const url = require("url");
 const strings = require("./lang/en/en.json");
+
 http
   .createServer(function (req, res) {
     let q = url.parse(req.url, true);
@@ -10,4 +11,5 @@ http
       ${strings.greeting.replace("%1", q.query["name"])}${utils.datetime()}
       </p>`);
   })
-  .listen(8888);
+  .listen(process.env.PORT || 8888);
+  

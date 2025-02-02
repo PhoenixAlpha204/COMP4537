@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/COMP4537/labs/3/getDate/(.*)",
+      "dest": "/COMP4537/labs/3/getDate/server.js",
+      "methods": ["GET"]
+    }
+  ],
+  "builds": [
+    {
+      "src": "COMP4537/labs/3/getDate/server.js",
+      "use": "@vercel/node"
+    }
+  ]
+}
