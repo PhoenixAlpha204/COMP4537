@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "labs/3/getDate/server.js": {
+      "runtime": "nodejs22.x"
+    }
+  }
+}
