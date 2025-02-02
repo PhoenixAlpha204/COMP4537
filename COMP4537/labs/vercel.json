@@ -1,6 +1,6 @@
 {
   "functions": {
-    "labs/3/getDate/server.js": {
+    "/COMP4537/labs/3/getDate/server.js": {
       "runtime": "nodejs22.x"
     }
   }
