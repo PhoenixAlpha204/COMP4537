@@ -16,7 +16,6 @@ http
     };
 
     s3.getObject(params, (err, oldData) => {
-      let existingData = "";
       if (!err) data = oldData.Body.toString() + data;
 
       const uploadParams = {
