@@ -2,36 +2,27 @@ const http = require("http");
 const url = require("url");
 const AWS = require("aws-sdk");
 
-// Configure AWS SDK
-AWS.config.update({ region: "us-east-2" }); // e.g., 'us-east-1'
+AWS.config.update({ region: "us-east-2" });
 const s3 = new AWS.S3();
-
-const bucketName = "phoenixalpha-comp4537"; // Replace with your S3 bucket name
+const bucketName = "phoenixalpha-comp4537";
 
 http
   .createServer((req, res) => {
     const q = url.parse(req.url, true);
-    const newData = `${q.query["text"]}\n`;
+    let data = `${q.query["text"]}\n`;
     const params = {
       Bucket: bucketName,
       Key: "file.txt",
     };
 
-    s3.getObject(params, (err, data) => {
+    s3.getObject(params, (err, oldData) => {
       let existingData = "";
+      if (!err) data = oldData.Body.toString() + data;
 
-      if (!err) {
-        existingData = data.Body.toString(); // Convert Buffer to string
-      }
-
-      // Combine existing data with new data
-      const combinedData = existingData + newData;
-
-      // Upload the combined data back to S3
       const uploadParams = {
         Bucket: bucketName,
         Key: "file.txt",
-        Body: combinedData,
+        Body: data,
         ContentType: "text/plain",
       };
 
