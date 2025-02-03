@@ -4,7 +4,7 @@ const url = require("url");
 const strings = require("./lang/en/en.json");
 
 http
-  .createServer(function (req, res) {
+  .createServer((req, res) => {
     let q = url.parse(req.url, true);
     res.writeHead(200, { "Content-Type": "text/html" });
     res.end(`<p style="color:blue;">
@@ -12,4 +12,3 @@ http
       </p>`);
   })
   .listen(process.env.PORT || 8888);
-  
