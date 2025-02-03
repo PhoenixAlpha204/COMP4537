@@ -1,5 +1,5 @@
 {
-  "name": "get-date",
+  "name": "read-file",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "http": "latest",
-    "url": "latest"
+    "url": "latest",
+    "fs": "latest"
   }
 }
