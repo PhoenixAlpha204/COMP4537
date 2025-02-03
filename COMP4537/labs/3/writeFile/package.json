@@ -8,6 +8,7 @@
   "dependencies": {
     "http": "latest",
     "url": "latest",
-    "fs": "latest"
+    "fs": "latest",
+    "aws-sdk": "latest"
   }
 }
