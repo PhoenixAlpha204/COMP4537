@@ -3,6 +3,7 @@ const url = require("url");
 const utils = require("./modules/utils");
 const strings = require("./lang/en/en.json");
 
+// ChatGPT was used to help write this.
 class Server {
   constructor(port) {
     this.port = port;

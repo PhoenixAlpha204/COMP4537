@@ -2,6 +2,7 @@ const http = require("http");
 const url = require("url");
 const AWS = require("aws-sdk");
 
+// ChatGPT was used to help write this.
 AWS.config.update({ region: "us-east-2" });
 const s3 = new AWS.S3();
 const bucketName = "phoenixalpha-comp4537";
