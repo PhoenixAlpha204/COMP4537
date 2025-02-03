@@ -12,7 +12,7 @@ const bucketName = "phoenixalpha-comp4537"; // Replace with your S3 bucket name
 http
   .createServer((req, res) => {
     const q = url.parse(req.url, true);
-    const fileName = q.pathname.slice(1);
+    const fileName = path.basename(q.pathname);
     // fs.readFile(`..${fileName}`, (err, data) => {
     //   if (err) {
     //     res.writeHead(404, { "Content-Type": "text/html" });
@@ -26,7 +26,7 @@ http
       Bucket: bucketName,
       Key: fileName,
     };
-  
+
     // Retrieve the file from S3
     s3.getObject(params, (err, data) => {
       if (err) {
