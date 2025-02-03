@@ -27,5 +27,5 @@ class Server {
   }
 }
 
-const server = new Server(process.env.PORT || 8888);
+const server = new Server(process.env.PORT);
 server.start();

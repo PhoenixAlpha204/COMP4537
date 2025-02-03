@@ -3,12 +3,16 @@ const url = require("url");
 const AWS = require("aws-sdk");
 
 // ChatGPT was used to help write this.
-AWS.config.update({ region: "us-east-2" });
-const s3 = new AWS.S3();
-const bucketName = "phoenixalpha-comp4537";
+class Server {
+  constructor(port) {
+    this.port = port;
+  }
 
-http
-  .createServer((req, res) => {
+  handleRequest(req, res) {
+    AWS.config.update({ region: "us-east-2" });
+    const s3 = new AWS.S3();
+    const bucketName = "phoenixalpha-comp4537";
+
     const q = url.parse(req.url, true);
     let data = `${q.query["text"]}\n`;
     const params = {
@@ -35,5 +39,15 @@ http
         return res.end("Data appended successfully!");
       });
     });
-  })
-  .listen(process.env.port || 8888);
+  }
+
+  start() {
+    const server = http.createServer((req, res) =>
+      this.handleRequest(req, res)
+    );
+    server.listen(this.port, () => {});
+  }
+}
+
+const server = new Server(process.env.PORT);
+server.start();
