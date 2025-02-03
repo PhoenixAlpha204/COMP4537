@@ -21,9 +21,7 @@ class Server {
     const server = http.createServer((req, res) =>
       this.handleRequest(req, res)
     );
-    server.listen(this.port, () => {
-      console.log(`Server is running on port ${this.port}`);
-    });
+    server.listen(this.port, () => {});
   }
 }
 

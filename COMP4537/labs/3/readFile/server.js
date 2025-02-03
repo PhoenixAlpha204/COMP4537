@@ -3,11 +3,15 @@ const url = require("url");
 const AWS = require("aws-sdk");
 
 // ChatGPT was used to help write this.
-AWS.config.update({ region: "us-east-2" });
-const s3 = new AWS.S3();
+class Server {
+  constructor(port) {
+    this.port = port;
+  }
 
-http
-  .createServer((req, res) => {
+  handleRequest(req, res) {
+    AWS.config.update({ region: "us-east-2" });
+    const s3 = new AWS.S3();
+    
     const q = url.parse(req.url, true);
     const pathName = q.pathname;
     const fileName = pathName.substring(pathName.lastIndexOf("/") + 1);
@@ -24,5 +28,15 @@ http
       res.writeHead(200, { "Content-Type": "text/plain" });
       return res.end(data.Body.toString());
     });
-  })
-  .listen(process.env.PORT || 8888);
+  }
+
+  start() {
+    const server = http.createServer((req, res) =>
+      this.handleRequest(req, res)
+    );
+    server.listen(this.port, () => {});
+  }
+}
+
+const server = new Server(process.env.PORT);
+server.start();
