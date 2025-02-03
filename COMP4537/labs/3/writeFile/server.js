@@ -1,22 +1,3 @@
-// const http = require("http");
-// const url = require("url");
-// const fs = require("fs");
-
-// http
-//   .createServer((req, res) => {
-//     const q = url.parse(req.url, true);
-//     const data = `${q.query["text"]}\n`;
-//     fs.appendFile("../file.txt", data, { flag: "a" }, (err) => {
-//       if (err) {
-//         res.writeHead(500, { "Content-Type": "text/html" });
-//         return res.end(`Error appending to file: ${err}`);
-//       }
-//       res.writeHead(200, { "Content-Type": "text/html" });
-//       return res.end("Data appended successfully!");
-//     });
-//   })
-//   .listen(process.env.PORT || 8888);
-
 const http = require("http");
 const url = require("url");
 const AWS = require("aws-sdk");
@@ -30,22 +11,38 @@ const bucketName = "phoenixalpha-comp4537"; // Replace with your S3 bucket name
 http
   .createServer((req, res) => {
     const q = url.parse(req.url, true);
-    const data = `${q.query["text"]}\n`;
+    const newData = `${q.query["text"]}\n`;
     const params = {
       Bucket: bucketName,
-      Key: "file.txt", // Unique file name
-      Body: data,
-      ContentType: "text/plain",
+      Key: "file.txt",
     };
 
-    // Upload data to S3
-    s3.upload(params, (err, data) => {
-      if (err) {
-        res.writeHead(500, { "Content-Type": "text/html" });
-        return res.end(`Error appending to file: ${err}`);
+    s3.getObject(params, (err, data) => {
+      let existingData = "";
+
+      if (!err) {
+        existingData = data.Body.toString(); // Convert Buffer to string
       }
-      res.writeHead(200, { "Content-Type": "text/html" });
-      return res.end("Data appended successfully!");
+
+      // Combine existing data with new data
+      const combinedData = existingData + newData;
+
+      // Upload the combined data back to S3
+      const uploadParams = {
+        Bucket: bucketName,
+        Key: "file.txt",
+        Body: combinedData,
+        ContentType: "text/plain",
+      };
+
+      s3.upload(uploadParams, (uploadErr) => {
+        if (uploadErr) {
+          res.writeHead(500, { "Content-Type": "text/html" });
+          return res.end(`Error appending to file: ${uploadErr}`);
+        }
+        res.writeHead(200, { "Content-Type": "text/html" });
+        return res.end("Data appended successfully!");
+      });
     });
   })
   .listen(process.env.port || 8888);
