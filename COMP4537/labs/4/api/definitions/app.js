@@ -9,6 +9,88 @@ class Server {
     this.port = port;
   }
 
+  // Return the given error code and message
+  resEnd(res, json, status, responseMessage) {
+    res.writeHead(status, { "Content-Type": "application/json " });
+    json.responseMessage = responseMessage;
+    return res.end(JSON.stringify(json));
+  }
+
+  handleGet(req, res, json) {
+    // Get the word the user requested
+    const q = url.parse(req.url, true);
+    const word = q.query["word"];
+
+    // Return 400 error if the word is incorrect
+    if (!word || word == parseInt(word))
+      return this.resEnd(res, json, 400, strings["400"]);
+
+    // Fetch dictionary from AWS
+    const params = { Bucket: "phoenixalpha-comp4537", Key: "lab4.json" };
+    s3.getObject(params, (err, data) => {
+      // File should exist
+      if (err) return this.resEnd(res, json, 500, strings["500"]);
+
+      // Parse the dictionary and definition requested
+      const dictionary = JSON.parse(data.Body.toString("utf-8"));
+      const definition = dictionary[word];
+
+      // If the definition does not exist return 404
+      if (!definition) return this.resEnd(res, json, 404, strings["404"]);
+
+      // Word is valid, return JSON
+      return this.resEnd(res, json, 200, `${word}: ${definition}`);
+    });
+  }
+
+  handlePost(req, res, json) {
+    // Parse request in chunks
+    let body = "";
+    req.on("data", (chunk) => {
+      if (chunk != null) body += chunk;
+    });
+    req.on("end", () => {
+      // Get the word and definition
+      const q = JSON.parse(body);
+      const word = q.word;
+      const definition = q.definition;
+
+      // Return 400 error if the word is incorrect
+      if (!word || word == parseInt(word))
+        return this.resEnd(res, json, 400, strings["400"]);
+
+      // Fetch file from s3
+      const params = { Bucket: "phoenixalpha-comp4537", Key: "lab4.json" };
+      s3.getObject(params, (err, data) => {
+        // File should exist
+        if (err) return this.resEnd(res, json, 500, strings["500"]);
+
+        // Parse the dictionary
+        const dictionary = JSON.parse(data.Body.toString("utf-8"));
+
+        // If the definition already exists return 409
+        if (dictionary[word])
+          return this.resEnd(res, json, 409, strings["409"]);
+
+        // Word is valid, append to file and return JSON
+        dictionary[word] = definition;
+        const uploadParams = {
+          Bucket: "phoenixalpha-comp4537",
+          Key: "lab4.json",
+          Body: JSON.stringify(dictionary),
+          ContentType: "application/json",
+        };
+        s3.upload(uploadParams, (uploadErr) => {
+          if (uploadErr) return this.resEnd(res, json, 500, strings["500"]);
+          const response = `New entry recorded:<br>
+                           \"${word}: ${definition}\"<br>
+                           total entries: ${Object.keys(dictionary).length}`;
+          return this.resEnd(res, json, 200, response);
+        });
+      });
+    });
+  }
+
   async handleRequest(req, res) {
     // Handle CORS preflight request
     if (req.method === "OPTIONS") {
@@ -25,9 +107,8 @@ class Server {
     const s3 = new AWS.S3();
 
     // Initialize JSON object with number of reqs from S3
-    const json = { numReqs: 0, responseMessage: "" };
     const newNum = await this.updateRequestCount(s3);
-    json.numReqs = newNum;
+    const json = { numReqs: newNum, responseMessage: "" };
 
     // Allow requests from frontend website
     res.setHeader(
@@ -35,108 +116,11 @@ class Server {
       "https://setrepmygoat.netlify.app"
     );
 
-    // Check method of request
+    // Handle request depending on method
     if (req.method === "GET") {
-      // Get the word the user requested
-      const q = url.parse(req.url, true);
-      const word = q.query["word"];
-
-      // Return 400 error if the word is incorrect
-      if (!word || word == parseInt(word)) {
-        res.writeHead(400, { "Content-Type": "application/json" });
-        json.responseMessage = strings["400"];
-        return res.end(JSON.stringify(json));
-      }
-
-      // Fetch dictionary from AWS
-      const params = {
-        Bucket: "phoenixalpha-comp4537",
-        Key: "lab4.json",
-      };
-      s3.getObject(params, (err, data) => {
-        // File should exist
-        if (err) {
-          res.writeHead(500, { "Content-Type": "application/json" });
-          json.responseMessage = strings["500"];
-          return res.end(JSON.stringify(json));
-        }
-
-        const dictionary = JSON.parse(data.Body.toString("utf-8"));
-        const definition = dictionary[word];
-
-        // If the definition does not exist return 404
-        if (!definition) {
-          res.writeHead(404, { "Content-Type": "application/json" });
-          json.responseMessage = strings["404"].replace("%1", word);
-          return res.end(JSON.stringify(json));
-        }
-
-        // Word is valid, return JSON
-        res.writeHead(200, { "Content-Type": "application/json" });
-        json.responseMessage = `${word}: ${definition}`;
-        return res.end(JSON.stringify(json));
-      });
+      return this.handleGet(req, res, json);
     } else if (req.method === "POST") {
-      let body = "";
-      req.on("data", (chunk) => {
-        if (chunk != null) body += chunk;
-      });
-      req.on("end", () => {
-        const q = JSON.parse(body);
-        const word = q.word;
-        const definition = q.definition;
-
-        // Return 400 error if the word is incorrect
-        if (!word || word == parseInt(word)) {
-          res.writeHead(400, { "Content-Type": "application/json" });
-          json.responseMessage = strings["400"];
-          return res.end(JSON.stringify(json));
-        }
-
-        // Fetch file from s3
-        const params = {
-          Bucket: "phoenixalpha-comp4537",
-          Key: "lab4.json",
-        };
-        s3.getObject(params, (err, data) => {
-          // File should exist
-          if (err) {
-            res.writeHead(500, { "Content-Type": "application/json" });
-            json.responseMessage = strings["500"];
-            return res.end(JSON.stringify(json));
-          }
-
-          const dictionary = JSON.parse(data.Body.toString("utf-8"));
-
-          // If the definition already exists return 409
-          if (dictionary[word]) {
-            res.writeHead(409, { "Content-Type": "application/json" });
-            json.responseMessage = strings["409"].replace("%1", word);
-            return res.end(JSON.stringify(json));
-          }
-
-          // Word is valid, append to file and return JSON
-          dictionary[word] = definition;
-          const uploadParams = {
-            Bucket: "phoenixalpha-comp4537",
-            Key: "lab4.json",
-            Body: JSON.stringify(dictionary),
-            ContentType: "application/json",
-          };
-          s3.upload(uploadParams, (uploadErr) => {
-            if (uploadErr) {
-              res.writeHead(500, { "Content-Type": "text/html" });
-              json.responseMessage = strings["500"];
-              return res.end(JSON.stringify(json));
-            }
-            res.writeHead(200, { "Content-Type": "application/json" });
-            json.responseMessage = `New entry recorded:<br>\"${word}: ${definition}\"<br>total entries: ${
-              Object.keys(dictionary).length
-            }`;
-            return res.end(JSON.stringify(json));
-          });
-        });
-      });
+      return this.handlePost(req, res, json);
     }
   }
 
