@@ -79,10 +79,9 @@ class Server {
         if (chunk != null) body += chunk;
       });
       req.on("end", () => {
-        console.log(body);
-        const q = JSON.parse(body, true);
-        const word = q.params.word;
-        const definition = q.params.definition;
+        const q = JSON.parse(body);
+        const word = q.word;
+        const definition = q.definition;
 
         // Fetch file from s3
         const params = {
