@@ -79,7 +79,8 @@ class Server {
         if (chunk != null) body += chunk;
       });
       req.on("end", () => {
-        const q = url.parse(body, true);
+        console.log(body);
+        const q = JSON.parse(body, true);
         const word = q.params.word;
         const definition = q.params.definition;
 
