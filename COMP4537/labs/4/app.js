@@ -46,7 +46,7 @@ class Server {
       }
 
       // Fetch dictionary from AWS
-      params = {
+      const params = {
         Bucket: "phoenixalpha-comp4537",
         Key: "lab4.json",
       };
