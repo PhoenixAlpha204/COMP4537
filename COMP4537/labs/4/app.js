@@ -13,7 +13,7 @@ class Server {
     // Handle CORS preflight request
     if (req.method === "OPTIONS") {
       res.writeHead(204, {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "https://setrepmygoat.netlify.app",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
       });
@@ -30,7 +30,7 @@ class Server {
     json.numReqs = newNum;
 
     // Allow requests from frontend website
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", "https://setrepmygoat.netlify.app");
 
     // Check method of request
     if (req.method === "GET") {
