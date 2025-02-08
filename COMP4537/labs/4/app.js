@@ -9,7 +9,7 @@ class Server {
     this.port = port;
   }
 
-  handleRequest(req, res) {
+  async handleRequest(req, res) {
     // Handle CORS preflight request
     if (req.method === "OPTIONS") {
       res.writeHead(204, {
@@ -24,8 +24,10 @@ class Server {
     AWS.config.update({ region: "us-east-2" });
     const s3 = new AWS.S3();
 
-    // Initialize JSON object
-    const json = { numReqs: 1 }; // TODO: read the nums from S3
+    // Initialize JSON object with number of reqs from S3
+    const json = { numReqs: 0, responseMessage: "" }
+    const newNum = await this.updateRequestCount();
+    json.numReqs = newNum;
 
     // Allow requests from frontend website
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -44,7 +46,7 @@ class Server {
       }
 
       // Fetch dictionary from AWS
-      const params = {
+      params = {
         Bucket: "phoenixalpha-comp4537",
         Key: "lab4.json",
       };
@@ -83,6 +85,29 @@ class Server {
         res.end(`Hello: ${q.query.name}, we got your POST request`);
       });
     }
+  }
+
+  // Helper function to update the request count on S3 and return the new count.
+  async updateRequestCount() {
+    const params = {
+      Bucket: "phoenixalpha-comp4537",
+      Key: "lab4.txt"
+    };
+
+    // Retrieve the current file contents
+    const oldData = await this.s3.getObject(params).promise();
+    // Parse the number from the file
+    const newNum = parseInt(oldData.Body.toString("utf-8"), 10) + 1;
+    
+    // Upload the new value to S3
+    const uploadParams = {
+      Bucket: "phoenixalpha-comp4537",
+      Key: "lab4.txt",
+      Body: `${newNum}`,
+      ContentType: "text/plain",
+    };
+    await this.s3.upload(uploadParams).promise();
+    return newNum;
   }
 
   start() {
