@@ -36,7 +36,8 @@ class Server {
       const definition = dictionary[word];
 
       // If the definition does not exist return 404
-      if (!definition) return this.resEnd(res, json, 404, strings["404"]);
+      if (!definition)
+        return this.resEnd(res, json, 404, strings["404"].replace("%1", word));
 
       // Word is valid, return JSON
       return this.resEnd(res, json, 200, `${word}: ${definition}`);
@@ -70,7 +71,7 @@ class Server {
 
         // If the definition already exists return 409
         if (dictionary[word])
-          return this.resEnd(res, json, 409, strings["409"]);
+          return this.resEnd(res, json, 409, strings["409"].replace("%1", word));
 
         // Word is valid, append to file and return JSON
         dictionary[word] = definition;
@@ -82,9 +83,10 @@ class Server {
         };
         s3.upload(uploadParams, (uploadErr) => {
           if (uploadErr) return this.resEnd(res, json, 500, strings["500"]);
-          const response = `New entry recorded:<br>
-                           \"${word}: ${definition}\"<br>
-                           total entries: ${Object.keys(dictionary).length}`;
+          const response = strings["store"]
+            .replace("%w", word)
+            .replace("%d", definition)
+            .replace("%e", Object.keys(dictionary).length);
           return this.resEnd(res, json, 200, response);
         });
       });
