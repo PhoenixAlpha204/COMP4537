@@ -17,8 +17,8 @@
       "methods": ["GET"]
     },
     {
-      "src": "/COMP4537/labs/4/(.*)",
-      "dest": "/COMP4537/labs/4/app.js",
+      "src": "/COMP4537/labs/4/api/definitions/(.*)",
+      "dest": "/COMP4537/labs/4/api/definitions/app.js",
       "methods": ["GET", "POST"],
       "headers": {
         "Access-Control-Allow-Origin": "https://setrepmygoat.netlify.app"
@@ -39,7 +39,7 @@
       "use": "@vercel/node"
     },
     {
-      "src": "COMP4537/labs/4/app.js",
+      "src": "COMP4537/labs/4/api/definitions/app.js",
       "use": "@vercel/node"
     }
   ]
