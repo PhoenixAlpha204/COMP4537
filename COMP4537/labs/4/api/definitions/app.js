@@ -30,7 +30,10 @@ class Server {
     json.numReqs = newNum;
 
     // Allow requests from frontend website
-    res.setHeader("Access-Control-Allow-Origin", "https://setrepmygoat.netlify.app");
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      "https://setrepmygoat.netlify.app"
+    );
 
     // Check method of request
     if (req.method === "GET") {
@@ -127,7 +130,7 @@ class Server {
               return res.end(JSON.stringify(json));
             }
             res.writeHead(200, { "Content-Type": "application/json" });
-            json.responseMessage = `${word}: ${definition}, total entries: ${
+            json.responseMessage = `New entry recorded:\n\"${word}: ${definition}\"\ntotal entries: ${
               Object.keys(dictionary).length
             }`;
             return res.end(JSON.stringify(json));
