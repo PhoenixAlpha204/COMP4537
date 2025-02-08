@@ -130,7 +130,7 @@ class Server {
               return res.end(JSON.stringify(json));
             }
             res.writeHead(200, { "Content-Type": "application/json" });
-            json.responseMessage = `New entry recorded:\n\"${word}: ${definition}\"\ntotal entries: ${
+            json.responseMessage = `New entry recorded:<br>\"${word}: ${definition}\"<br>total entries: ${
               Object.keys(dictionary).length
             }`;
             return res.end(JSON.stringify(json));
