@@ -25,7 +25,7 @@ class Server {
     const s3 = new AWS.S3();
 
     // Initialize JSON object with number of reqs from S3
-    const json = { numReqs: 0, responseMessage: "" }
+    const json = { numReqs: 0, responseMessage: "" };
     const newNum = await this.updateRequestCount(s3);
     json.numReqs = newNum;
 
@@ -97,16 +97,16 @@ class Server {
           }
 
           const dictionary = JSON.parse(data.Body.toString("utf-8"));
-  
+
           // If the definition already exists return 409
           if (dictionary[word]) {
             res.writeHead(409, { "Content-Type": "application/json" });
             json.responseMessage = strings["409"].replace("%1", word);
             return res.end(JSON.stringify(json));
           }
-  
+
           // Word is valid, append to file and return JSON
-          dictionary.word = definition;
+          dictionary[word] = definition;
           const uploadParams = {
             Bucket: "phoenixalpha-comp4537",
             Key: "lab4.json",
@@ -120,7 +120,9 @@ class Server {
               return res.end(JSON.stringify(json));
             }
             res.writeHead(200, { "Content-Type": "application/json" });
-            json.responseMessage = `${word}: ${definition}`;
+            json.responseMessage = `${word}: ${definition}, total entries: ${
+              Object.keys(dictionary).length
+            }`;
             return res.end(JSON.stringify(json));
           });
         });
@@ -132,14 +134,14 @@ class Server {
   async updateRequestCount(s3) {
     const params = {
       Bucket: "phoenixalpha-comp4537",
-      Key: "lab4.txt"
+      Key: "lab4.txt",
     };
 
     // Retrieve the current file contents
     const oldData = await s3.getObject(params).promise();
     // Parse the number from the file
     const newNum = parseInt(oldData.Body.toString("utf-8"), 10) + 1;
-    
+
     // Upload the new value to S3
     const uploadParams = {
       Bucket: "phoenixalpha-comp4537",
