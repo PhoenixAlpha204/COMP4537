@@ -24,6 +24,9 @@ class Server {
     // Initialize JSON object
     const json = { numReqs: 1 }; // TODO: read the nums from S3
 
+    // Allow requests from frontend website
+    res.setHeader("Access-Control-Allow-Origin", "*");
+
     // Check method of request
     if (req.method === "GET") {
       // Get the word the user requested
