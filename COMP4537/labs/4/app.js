@@ -31,7 +31,7 @@ class Server {
       const word = q.query["word"];
 
       // Return 400 error if the word is incorrect
-      if (word === undefined || word == parseInt(word)) {
+      if (!word || word == parseInt(word)) {
         res.writeHead(400, { "Content-Type": "application/json" });
         json.responseMessage = strings["400"];
         return res.end(JSON.stringify(json));
