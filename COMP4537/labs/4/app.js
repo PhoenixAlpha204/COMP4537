@@ -11,10 +11,13 @@ class Server {
 
   handleRequest(req, res) {
     // Handle CORS preflight request
-    if (req.headers["access-control-request-method"]) {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.setHeader("Access-Control-Allow-Methods", "GET, POST");
-      res.end();
+    if (req.method === "OPTIONS") {
+      res.writeHead(204, {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+      });
+      return res.end();
     }
 
     // Initialize S3 object
