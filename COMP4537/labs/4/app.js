@@ -26,7 +26,7 @@ class Server {
 
     // Initialize JSON object with number of reqs from S3
     const json = { numReqs: 0, responseMessage: "" }
-    const newNum = await this.updateRequestCount();
+    const newNum = await this.updateRequestCount(s3);
     json.numReqs = newNum;
 
     // Allow requests from frontend website
@@ -88,14 +88,14 @@ class Server {
   }
 
   // Helper function to update the request count on S3 and return the new count.
-  async updateRequestCount() {
+  async updateRequestCount(s3) {
     const params = {
       Bucket: "phoenixalpha-comp4537",
       Key: "lab4.txt"
     };
 
     // Retrieve the current file contents
-    const oldData = await this.s3.getObject(params).promise();
+    const oldData = await s3.getObject(params).promise();
     // Parse the number from the file
     const newNum = parseInt(oldData.Body.toString("utf-8"), 10) + 1;
     
