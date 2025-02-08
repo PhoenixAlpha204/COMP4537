@@ -1,5 +1,6 @@
 {
   "400": "400 bad request: must be non-empty and non-number",
   "404": "404 not found: %1",
+  "409": "Warning! %1 already exists",
   "500": "500 server error: dictionary could not be loaded"
 }

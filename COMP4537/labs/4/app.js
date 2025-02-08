@@ -57,6 +57,7 @@ class Server {
           json.responseMessage = strings["500"];
           return res.end(JSON.stringify(json));
         }
+
         const dictionary = JSON.parse(data.Body.toString("utf-8"));
         const definition = dictionary[word];
 
@@ -74,15 +75,55 @@ class Server {
       });
     } else if (req.method === "POST") {
       let body = "";
-      // req.on(data) gets called when something has been read from stream
       req.on("data", (chunk) => {
         if (chunk != null) body += chunk;
       });
-      // req.on(end) gets called when stream has ended
-      // (all data has been transferred from client to server)
       req.on("end", () => {
-        let q = url.parse(body, true);
-        res.end(`Hello: ${q.query.name}, we got your POST request`);
+        const q = url.parse(body, true);
+        const word = q.params.word;
+        const definition = q.params.definition;
+
+        // Fetch file from s3
+        const params = {
+          Bucket: "phoenixalpha-comp4537",
+          Key: "lab4.json",
+        };
+        s3.getObject(params, (err, data) => {
+          // File should exist
+          if (err) {
+            res.writeHead(500, { "Content-Type": "application/json" });
+            json.responseMessage = strings["500"];
+            return res.end(JSON.stringify(json));
+          }
+
+          const dictionary = JSON.parse(data.Body.toString("utf-8"));
+  
+          // If the definition already exists return 409
+          if (dictionary[word]) {
+            res.writeHead(409, { "Content-Type": "application/json" });
+            json.responseMessage = strings["409"].replace("%1", word);
+            return res.end(JSON.stringify(json));
+          }
+  
+          // Word is valid, append to file and return JSON
+          dictionary.word = definition;
+          const uploadParams = {
+            Bucket: "phoenixalpha-comp4537",
+            Key: "lab4.json",
+            Body: JSON.stringify(dictionary),
+            ContentType: "application/json",
+          };
+          s3.upload(uploadParams, (uploadErr) => {
+            if (uploadErr) {
+              res.writeHead(500, { "Content-Type": "text/html" });
+              json.responseMessage = strings["500"];
+              return res.end(JSON.stringify(json));
+            }
+            res.writeHead(200, { "Content-Type": "application/json" });
+            json.responseMessage = `${word}: ${definition}`;
+            return res.end(JSON.stringify(json));
+          });
+        });
       });
     }
   }
