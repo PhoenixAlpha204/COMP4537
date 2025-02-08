@@ -19,7 +19,10 @@
     {
       "src": "/COMP4537/labs/4/(.*)",
       "dest": "/COMP4537/labs/4/app.js",
-      "methods": ["GET", "POST"]
+      "methods": ["GET", "POST"],
+      "headers": {
+        "Access-Control-Allow-Origin": "*"
+      }
     }
   ],
   "builds": [
