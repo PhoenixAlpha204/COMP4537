@@ -16,7 +16,7 @@ class Server {
     return res.end(JSON.stringify(json));
   }
 
-  handleGet(req, res, json) {
+  handleGet(req, res, json, s3) {
     // Get the word the user requested
     const q = url.parse(req.url, true);
     const word = q.query["word"];
@@ -43,7 +43,7 @@ class Server {
     });
   }
 
-  handlePost(req, res, json) {
+  handlePost(req, res, json, s3) {
     // Parse request in chunks
     let body = "";
     req.on("data", (chunk) => {
@@ -118,9 +118,9 @@ class Server {
 
     // Handle request depending on method
     if (req.method === "GET") {
-      return this.handleGet(req, res, json);
+      return this.handleGet(req, res, json, s3);
     } else if (req.method === "POST") {
-      return this.handlePost(req, res, json);
+      return this.handlePost(req, res, json, s3);
     }
   }
 
