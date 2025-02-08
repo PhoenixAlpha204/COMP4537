@@ -28,13 +28,10 @@ class Server {
     if (req.method === "GET") {
       // Get the word the user requested
       const q = url.parse(req.url, true);
-      console.log(q);
       const word = q.query["word"];
 
       // Return 400 error if the word is incorrect
-      if (word != parseInt(word)) {
-        console.log(word);
-        console.log(parseInt(word));
+      if (word === undefined || word == parseInt(word)) {
         res.writeHead(400, { "Content-Type": "application/json" });
         json.responseMessage = strings["400"];
         return res.end(JSON.stringify(json));
