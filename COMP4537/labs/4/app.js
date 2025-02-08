@@ -83,6 +83,13 @@ class Server {
         const word = q.word;
         const definition = q.definition;
 
+        // Return 400 error if the word is incorrect
+        if (!word || word == parseInt(word)) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          json.responseMessage = strings["400"];
+          return res.end(JSON.stringify(json));
+        }
+
         // Fetch file from s3
         const params = {
           Bucket: "phoenixalpha-comp4537",
