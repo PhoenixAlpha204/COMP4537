@@ -34,8 +34,7 @@ class Server {
       if (word != parseInt(word)) {
         res.writeHead(400, { "Content-Type": "application/json" });
         json.responseMessage = strings["400"];
-        json = JSON.stringify(json);
-        return res.end(json);
+        return res.end(JSON.stringify(json));
       }
 
       // Fetch dictionary from AWS
@@ -48,8 +47,7 @@ class Server {
         if (err) {
           res.writeHead(500, { "Content-Type": "application/json" });
           json.responseMessage = strings["500"];
-          json = JSON.stringify(json);
-          return res.end(json);
+          return res.end(JSON.stringify(json));
         }
         const dictionary = JSON.parse(data.Body.toString("utf-8"));
         const definition = dictionary[word];
@@ -58,15 +56,13 @@ class Server {
         if (!definition) {
           res.writeHead(404, { "Content-Type": "application/json" });
           json.responseMessage = strings["404"].replace("%1", word);
-          json = JSON.stringify(json);
-          return res.end(json);
+          return res.end(JSON.stringify(json));
         }
 
         // Word is valid, return JSON
         res.writeHead(200, { "Content-Type": "application/json" });
         json.responseMessage = `${word}: ${definition}`;
-        json = JSON.stringify(json);
-        return res.end(json);
+        return res.end(JSON.stringify(json));
       });
     } else if (req.method === "POST") {
       let body = "";
