@@ -106,7 +106,7 @@ class Server {
       Body: `${newNum}`,
       ContentType: "text/plain",
     };
-    await this.s3.upload(uploadParams).promise();
+    await s3.upload(uploadParams).promise();
     return newNum;
   }
 
