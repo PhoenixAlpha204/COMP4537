@@ -37,6 +37,8 @@ class Server {
       });
     });
 
+    console.log("finished connecting to admin table");
+
     const query = `CREATE TABLE IF NOT EXISTS patients (
       patientid int(11) AUTO_INCREMENT PRIMARY KEY,
       name varchar(100),
@@ -51,6 +53,8 @@ class Server {
       });
     });
 
+    console.log("finished creating table");
+
     // Disconnect from admin account
     await new Promise((resolve, reject) => {
       this.adminConnection.end((err) => {
@@ -58,14 +62,19 @@ class Server {
         resolve();
       });
     });
+
+    console.log("disconnected from admin");
   }
 
   runQuery(query, res) {
     this.userConnection.connect((err) => {
       if (err) throw err;
 
+      console.log("Connected to user account");
+
       this.userConnection.query(query, (err, result) => {
         if (err) throw err;
+        console.log("Ran query");
         this.userConnection.end();
         return this.resEnd(res, 200, result);
       });
