@@ -80,7 +80,7 @@ class Server {
     const q = url.parse(req.url, true);
     const pathName = q.pathname;
     const query = decodeURIComponent(
-      pathName.substring(pathName.lastIndexOf("/") + 1)
+      pathName.substring(pathName.lastIndexOf("/") + 1).replaceAll("%", "%25")
     ).replaceAll('"', "");
     if (query) return this.runQuery(query, res);
     else return this.resEnd(res, 400, strings["400"]);
