@@ -1,0 +1,13 @@
+{
+  "name": "sql",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "http": "latest",
+    "mysql2": "latest",
+    "url": "latest"
+  }
+}
