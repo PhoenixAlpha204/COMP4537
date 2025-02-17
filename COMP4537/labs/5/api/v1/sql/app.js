@@ -31,8 +31,6 @@ class Server {
       });
     });
 
-    console.log("finished connecting to admin table");
-
     const query = `CREATE TABLE IF NOT EXISTS patients (
       patientid int(11) AUTO_INCREMENT PRIMARY KEY,
       name varchar(100),
@@ -47,8 +45,6 @@ class Server {
       });
     });
 
-    console.log("finished creating table");
-
     // Disconnect from admin account
     await new Promise((resolve, reject) => {
       adminConnection.end((err) => {
@@ -56,8 +52,6 @@ class Server {
         resolve();
       });
     });
-
-    console.log("disconnected from admin");
   }
 
   runQuery(query, res) {
@@ -72,11 +66,9 @@ class Server {
     userConnection.connect((err) => {
       if (err) throw err;
 
-      console.log("Connected to user account");
-
       userConnection.query(query, (err, result) => {
         if (err) throw err;
-        console.log("Ran query");
+
         userConnection.end();
         return this.resEnd(res, 200, result);
       });
@@ -110,7 +102,7 @@ class Server {
     // Handle CORS preflight request
     if (req.method === "OPTIONS") {
       res.writeHead(204, {
-        "Access-Control-Allow-Origin": "https://setrepmygoat.netlify.app",
+        "Access-Control-Allow-Origin": "*" /*"https://setrepmygoat.netlify.app"*/,
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
       });
@@ -120,7 +112,7 @@ class Server {
     // Allow requests from frontend website
     res.setHeader(
       "Access-Control-Allow-Origin",
-      "https://setrepmygoat.netlify.app"
+      "*" // "https://setrepmygoat.netlify.app"
     );
 
     // Handle request depending on method
