@@ -28,19 +28,34 @@ class Server {
     return res.end(JSON.stringify({ responseMessage }));
   }
 
-  createTable() {
-    this.adminConnection.connect((err) => {
-      if (err) throw err;
+  async createTable() {
+    // Connect to admin account
+    await new Promise((resolve, reject) => {
+      this.adminConnection.connect((err) => {
+        if (err) return reject(err);
+        resolve();
+      });
+    });
 
-      const query = `CREATE TABLE IF NOT EXISTS patients (
-          patientid int(11) AUTO_INCREMENT PRIMARY KEY,
-          name varchar(100),
-          dateOfBirth datetime
-        )`;
+    const query = `CREATE TABLE IF NOT EXISTS patients (
+      patientid int(11) AUTO_INCREMENT PRIMARY KEY,
+      name varchar(100),
+      dateOfBirth datetime
+    )`;
 
-      this.adminConnection.query(query, (err, _result) => {
-        if (err) throw err;
-        this.adminConnection.end();
+    // Create the table
+    await new Promise((resolve, reject) => {
+      this.adminConnection.query(query, (err, result) => {
+        if (err) return reject(err);
+        resolve(result);
+      });
+    });
+
+    // Disconnect from admin account
+    await new Promise((resolve, reject) => {
+      this.adminConnection.end((err) => {
+        if (err) return reject(err);
+        resolve();
       });
     });
   }
@@ -61,9 +76,9 @@ class Server {
     // Get the user's query
     const q = url.parse(req.url, true);
     const pathName = q.pathname;
-    const query = pathName
-      .substring(pathName.lastIndexOf("/") + 1)
-      .replaceAll('"', "");
+    const query = decodeURIComponent(
+      pathName.substring(pathName.lastIndexOf("/") + 1)
+    ).replaceAll('"', "");
     if (query) return this.runQuery(query, res);
     else return this.resEnd(res, 400, strings["400"]);
   }
@@ -99,7 +114,7 @@ class Server {
 
     // Handle request depending on method
     try {
-      this.createTable();
+      await this.createTable();
       if (req.method === "GET") return this.handleGet(req, res);
       else if (req.method === "POST") return this.handlePost(req, res);
     } catch (err) {
