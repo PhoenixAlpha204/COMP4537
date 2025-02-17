@@ -79,9 +79,11 @@ class Server {
     // Get the user's query
     const q = url.parse(req.url, true);
     const pathName = q.pathname;
-    const query = decodeURIComponent(
+    let query = decodeURIComponent(
       pathName.substring(pathName.lastIndexOf("/") + 1)
-    ).replaceAll('"', "");
+    );
+    if (query.charAt(0) === '"') query = query.substring(1);
+    if (query.charAt(query.length - 1) === '"') query = query.substring(0, query.length - 1);
     if (query) return this.runQuery(query, res);
     else return this.resEnd(res, 400, strings["400"]);
   }
