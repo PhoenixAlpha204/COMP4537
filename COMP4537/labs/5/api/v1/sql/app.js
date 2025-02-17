@@ -7,20 +7,6 @@ const strings = require("./lang/en/en.json");
 class Server {
   constructor(port) {
     this.port = port;
-    this.userConnection = mysql.createConnection({
-      host: "comp4537.cve8c4iaoaf4.us-east-2.rds.amazonaws.com",
-      user: process.env.AWS_RDS_USER,
-      password: process.env.AWS_RDS_USER_PW,
-      database: "comp4537",
-      connectTimeout: 10000,
-    });
-    this.adminConnection = mysql.createConnection({
-      host: "comp4537.cve8c4iaoaf4.us-east-2.rds.amazonaws.com",
-      user: process.env.AWS_RDS_ADMIN,
-      password: process.env.AWS_RDS_ADMIN_PW,
-      database: "comp4537",
-      connectTimeout: 10000,
-    });
   }
 
   resEnd(res, status, responseMessage) {
@@ -29,9 +15,17 @@ class Server {
   }
 
   async createTable() {
+    const adminConnection = mysql.createConnection({
+      host: "comp4537.cve8c4iaoaf4.us-east-2.rds.amazonaws.com",
+      user: process.env.AWS_RDS_ADMIN,
+      password: process.env.AWS_RDS_ADMIN_PW,
+      database: "comp4537",
+      connectTimeout: 10000,
+    });
+
     // Connect to admin account
     await new Promise((resolve, reject) => {
-      this.adminConnection.connect((err) => {
+      adminConnection.connect((err) => {
         if (err) return reject(err);
         resolve();
       });
@@ -47,7 +41,7 @@ class Server {
 
     // Create the table
     await new Promise((resolve, reject) => {
-      this.adminConnection.query(query, (err, result) => {
+      adminConnection.query(query, (err, result) => {
         if (err) return reject(err);
         resolve(result);
       });
@@ -57,7 +51,7 @@ class Server {
 
     // Disconnect from admin account
     await new Promise((resolve, reject) => {
-      this.adminConnection.end((err) => {
+      adminConnection.end((err) => {
         if (err) return reject(err);
         resolve();
       });
@@ -67,15 +61,23 @@ class Server {
   }
 
   runQuery(query, res) {
-    this.userConnection.connect((err) => {
+    const userConnection = mysql.createConnection({
+      host: "comp4537.cve8c4iaoaf4.us-east-2.rds.amazonaws.com",
+      user: process.env.AWS_RDS_USER,
+      password: process.env.AWS_RDS_USER_PW,
+      database: "comp4537",
+      connectTimeout: 10000,
+    });
+
+    userConnection.connect((err) => {
       if (err) throw err;
 
       console.log("Connected to user account");
 
-      this.userConnection.query(query, (err, result) => {
+      userConnection.query(query, (err, result) => {
         if (err) throw err;
         console.log("Ran query");
-        this.userConnection.end();
+        userConnection.end();
         return this.resEnd(res, 200, result);
       });
     });
