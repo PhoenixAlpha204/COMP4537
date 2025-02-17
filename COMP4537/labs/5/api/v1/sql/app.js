@@ -31,7 +31,7 @@ class Server {
       });
     });
 
-    const query = `CREATE TABLE IF NOT EXISTS patients (
+    const query = `CREATE TABLE IF NOT EXISTS patient (
       patientid int(11) AUTO_INCREMENT PRIMARY KEY,
       name varchar(100),
       dateOfBirth datetime
@@ -102,7 +102,7 @@ class Server {
     // Handle CORS preflight request
     if (req.method === "OPTIONS") {
       res.writeHead(204, {
-        "Access-Control-Allow-Origin": "*" /*"https://setrepmygoat.netlify.app"*/,
+        "Access-Control-Allow-Origin": "https://setrepmygoat.netlify.app",
         "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
       });
@@ -112,7 +112,7 @@ class Server {
     // Allow requests from frontend website
     res.setHeader(
       "Access-Control-Allow-Origin",
-      "*" // "https://setrepmygoat.netlify.app"
+      "https://setrepmygoat.netlify.app"
     );
 
     // Handle request depending on method

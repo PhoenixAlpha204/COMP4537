@@ -29,7 +29,7 @@
       "dest": "/COMP4537/labs/5/api/v1/sql/app.js",
       "methods": ["GET", "POST"],
       "headers": {
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "https://setrepmygoat.netlify.app"
       }
     }
   ],
